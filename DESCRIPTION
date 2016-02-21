@@ -1,0 +1,15 @@
+Package: ChannelAttributionApp
+Type: Package
+Title: Shiny Web Application for the Multichannel Attribution Problem
+Version: 1.1
+Date: 2016-02-20
+Author: Davide Altomare
+Maintainer: Davide Altomare <davide.altomare@gmail.com>
+Description: Shiny Web Application for the Multichannel Attribution Problem. It is basically a user-friendly graphical interface for running and comparing all the attribution models in package 'ChannelAttribution'. For customizations or interest in other statistical methodologies for web data analysis please contact <davide.altomare@gmail.com>.
+License: GPL (>= 2)
+URL:
+        http://www.slideshare.net/adavide1982/markov-model-for-the-multichannel-attribution-problem
+Imports: ChannelAttribution, shiny, data.table, ggplot2, utils
+NeedsCompilation: no
+Repository: CRAN
+Date/Publication: 2016-02-21 19:51:20
