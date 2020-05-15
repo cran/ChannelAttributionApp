@@ -1,4 +1,15 @@
 
+require(ChannelAttribution)
+require(shiny)
+require(DT)
+require(data.table)
+require(ggplot2)
+
+env0=new.env()
+env0$exe_demo=0
+env0$R=0
+data(PathData,envir=env0)
+
 CAapp=function(){
    
  ca_app=shinyApp(
@@ -15,15 +26,17 @@ CAapp=function(){
   	       tags$hr(),
   		   actionButton("demoData", "Load Demo Data"),
   	       tags$hr(),
-            fileInput('file1', 'Load Input File',
+           fileInput('file1', 'Load Input File',
                         accept=c('text/csv', 'text/comma-separated-values,text/plain', '.csv')),
-            radioButtons('sep', 'Separator', c(Comma=',',Semicolon=';',Tab='\t'),'Semicolon'),
-            tags$hr(),
+           radioButtons('sep', 'Path Separator', c(Comma=',',Semicolon=';',Tab='\t'),'Semicolon'),
+           tags$hr(),
   		   uiOutput('var_path'),
   		   uiOutput('var_conv'),
   		   uiOutput('var_value'),
   		   uiOutput('var_null'),
   		   tags$hr(),
+		   selectInput("order", "Markov model order:",c("1","2","3","4","5"),"1"),
+		   tags$hr(),
             actionButton(inputId="runButton", "Run")
            ),
       
@@ -83,43 +96,43 @@ CAapp=function(){
    
     #Demo Data
     execute=observeEvent(input$demoData, {
-    
-     write.table(1, "demo.txt", col.names=FALSE, row.names=FALSE, quote=FALSE, sep=";")
-     load(paste0(.libPaths(),"/ChannelAttribution/data/PathData.rda"))
-     		
+   
+	 env0$exe_demo=1
+	     		
      output$Data=renderDataTable({
- 	 Data
+ 	 env0$Data
      }, options=list(pageLength=10))
      
      output$var_path=renderUI({
-      selectInput('var_path', 'Path Variable',c("",colnames(Data)),selected="path")
+      selectInput('var_path', 'Path Variable',c("",colnames(env0$Data)),selected="path")
      })
     
      output$var_conv=renderUI({
-      selectInput('var_conv', 'Conversion Variable',c("",colnames(Data)),selected="total_conversions")
+      selectInput('var_conv', 'Conversion Variable',c("",colnames(env0$Data)),selected="total_conversions")
      })
     
      output$var_value=renderUI({
-      selectInput('var_value', 'Value Variable',c("",colnames(Data)),selected="total_conversion_value")
+      selectInput('var_value', 'Value Variable',c("",colnames(env0$Data)),selected="total_conversion_value")
      })
     
      output$var_null=renderUI({
-      selectInput('var_null', 'Null Variable',c("",colnames(Data)),selected="total_null")
+      selectInput('var_null', 'Null Variable',c("",colnames(env0$Data)),selected="total_null")
      })
          
     })
   
     execute=observeEvent(input$file1, { 
  	
- 	 write.table(0, "demo.txt", col.names=FALSE, row.names=FALSE, quote=FALSE, sep=";")
+	 env0$exe_demo=0
      
  	 #Load Data
       output$Data=renderDataTable({
         	 
         inFile=input$file1
  	    if(is.null(inFile)){return(NULL)}
- 	    tmp0=readLines(con=inFile$datapath, n=200)
- 	    tab0=fread(paste0(tmp0,collapse="\n "),sep=input$sep,nrows=100)
+ 	    #tmp0=readLines(con=inFile$datapath, n=200)
+		tab0=fread(inFile$datapath,sep=input$sep,nrows=200) 	    
+		#tab0=fread(paste0(tmp0,collapse="\n "),sep=input$sep,nrows=100)
  	      
       }, options=list(pageLength=10))
       
@@ -127,31 +140,35 @@ CAapp=function(){
       output$var_path=renderUI({
         inFile=input$file1
         if(is.null(inFile)){return(NULL)}
-        tmp0=readLines(con=inFile$datapath, n=200)
- 	    tab0=fread(paste0(tmp0,collapse="\n "),sep=input$sep,nrows=1)
+        #tmp0=readLines(con=inFile$datapath, n=200)
+		# tab0=fread(inFile$datapath,sep=input$sep,nrows=200) 
+ 	    tab0=fread(inFile$datapath,sep=input$sep,nrows=1)
         selectInput('var_path', 'Path Variable', c("",colnames(tab0)))
       })
       
       output$var_conv=renderUI({
         inFile=input$file1
         if(is.null(inFile)){return(NULL)}
-        tmp0=readLines(con=inFile$datapath, n=200)
- 	   tab0=fread(paste0(tmp0,collapse="\n "),sep=input$sep,nrows=1)
+        #tmp0=readLines(con=inFile$datapath, n=200)
+		tab0=fread(inFile$datapath,sep=input$sep,nrows=1)
+ 	    #tab0=fread(paste0(tmp0,collapse="\n "),sep=input$sep,nrows=1)
         selectInput('var_conv', 'Conversion Variable', c("",colnames(tab0)))
       })
       
       output$var_value=renderUI({
         inFile=input$file1
         if(is.null(inFile)){return(NULL)}
-        tmp0=readLines(con=inFile$datapath, n=200)
- 	    tab0=fread(paste0(tmp0,collapse="\n "),sep=input$sep,nrows=1)
+        #tmp0=readLines(con=inFile$datapath, n=200)
+		tab0=fread(inFile$datapath,sep=input$sep,nrows=1)
+ 	    #tab0=fread(paste0(tmp0,collapse="\n "),sep=input$sep,nrows=1)
         selectInput('var_value', 'Value Variable', c("",colnames(tab0)))
       })
       
       output$var_null=renderUI({
         inFile=input$file1
-        tmp0=readLines(con=inFile$datapath, n=200)
- 	    tab0=fread(paste0(tmp0,collapse="\n "),sep=input$sep,nrows=1)
+        #tmp0=readLines(con=inFile$datapath, n=200)
+		tab0=fread(inFile$datapath,sep=input$sep,nrows=1)
+ 	    #tab0=fread(paste0(tmp0,collapse="\n "),sep=input$sep,nrows=1)
         selectInput('var_null', 'Null Variable', c("",colnames(tab0)))
       })
     
@@ -171,8 +188,8 @@ CAapp=function(){
         paste0(input$dataout, '.csv')
       },
       content=function(file){
-        out=fread(paste0(datasetOutput(),".csv"), header=TRUE, sep=";")
-        write.table(out, file, col.names=TRUE, row.names=FALSE, quote=FALSE, sep=";")
+        #out=fread(paste0(datasetOutput(),".csv"), header=TRUE, sep=";")
+        write.table(env0$R, file, col.names=TRUE, row.names=FALSE, quote=FALSE, sep=";")
       }
     )
     
@@ -184,43 +201,37 @@ CAapp=function(){
   
  
  	   incProgress(1/2, detail="Start (1/2)")
-        
- 	   demo=fread("demo.txt", header=FALSE,colClasses="numeric")
-        demo=demo$V1
-        
-        if(demo==0){
-         Data=fread(input$file1$datapath, header=TRUE, sep=input$sep)
-        }else{
- 	     load(paste0(.libPaths(),"/ChannelAttribution/data/PathData.rda"))
+               
+        if(env0$exe_demo==0){
+         env0$Data=fread(input$file1$datapath, header=TRUE, sep=input$sep)
         }
-        
         
         if(input$var_null!=""){var_null=input$var_null}else{var_null=NULL}
         if(input$var_value!=""){var_value=input$var_value}else{var_value=NULL}
          
         #HEURISTIC MODELS
-        H=heuristic_models(Data,input$var_path,input$var_conv,var_value=var_value)
+        H=heuristic_models(env0$Data,input$var_path,input$var_conv,var_value=var_value)
         setDT(H)
         
         #MARKOV MODEL
-        M=markov_model(Data,input$var_path,input$var_conv,var_value=var_value,var_null=var_null)
+        M=markov_model_mp(env0$Data,input$var_path,input$var_conv,var_value=var_value,var_null=var_null,order=as.numeric(input$order))
         setDT(M)
  	     
         setkeyv(H,"channel_name")
         setkeyv(M,"channel_name")
-        R=merge(H,M,all=TRUE)
+        env0$R=merge(H,M,all=TRUE)
        
         if(input$var_value!=""){
-         setnames(R,c("total_conversion","total_conversion_value"),c("markov_conversions","markov_value"))
+         setnames(env0$R,c("total_conversion","total_conversion_value"),c("markov_conversions","markov_value"))
         }else{
-         setnames(R,c("first_touch","last_touch","linear_touch","total_conversions"),c("first_touch_conversions","last_touch_conversions","linear_touch_conversions","markov_conversions"))
+         setnames(env0$R,c("first_touch","last_touch","linear_touch","total_conversions"),c("first_touch_conversions","last_touch_conversions","linear_touch_conversions","markov_conversions"))
         }
         
-        write.table(R, "R.csv", col.names=TRUE, row.names=FALSE, quote=FALSE, sep=";")
+        # write.table(env0$R, "R.csv", col.names=TRUE, row.names=FALSE, quote=FALSE, sep=";")
            
         #PLOT TOTAL CONVERSIONS
         
-        R1=R[,c("channel_name","first_touch_conversions","last_touch_conversions","linear_touch_conversions","markov_conversions"),with=FALSE]
+        R1=env0$R[,c("channel_name","first_touch_conversions","last_touch_conversions","linear_touch_conversions","markov_conversions"),with=FALSE]
         lnm=length(colnames(R1))
         setnames(R1,c("channel_name","first_touch","last_touch","linear_touch","markov_model"))
         
@@ -243,13 +254,13 @@ CAapp=function(){
         
         if(input$var_value!=""){
         
-         R2=R[,c("channel_name","first_touch_value","last_touch_value","linear_touch_value","markov_value"),with=FALSE]
+         R2=env0$R[,c("channel_name","first_touch_value","last_touch_value","linear_touch_value","markov_value"),with=FALSE]
          lnm=length(colnames(R2))
          setnames(R2,1:lnm,c("channel_name","first_touch","last_touch","linear_touch","markov_model"))
         
         }else{
         
-         R2=R[,c("channel_name","first_touch_conversions","last_touch_conversions","linear_touch_conversions","markov_conversions"),with=FALSE]
+         R2=env0$R[,c("channel_name","first_touch_conversions","last_touch_conversions","linear_touch_conversions","markov_conversions"),with=FALSE]
          lnm=length(colnames(R2))
          setnames(R2,1:lnm,c("channel_name","first_touch","last_touch","linear_touch","markov_model"))
          R2[,c("first_touch","last_touch","linear_touch","markov_model"):=0]
@@ -287,7 +298,7 @@ CAapp=function(){
        })
   	 
   	 output$R=renderDataTable({
-        R
+        env0$R
        }, options=list(pageLength=10))
   	 
   	 observe({

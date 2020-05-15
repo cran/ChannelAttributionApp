@@ -8,15 +8,15 @@ Shiny Web Application for the Multichannel Attribution Problem
 }
 
 \description{
-Shiny Web Application for the Multichannel Attribution Problem. It is basically a user-friendly graphical interface for running and comparing all the attribution models in package 'ChannelAttribution'. For customizations or interest in other statistical methodologies for web data analysis please contact <davide.altomare@gmail.com>.
+Shiny Web Application for the Multichannel Attribution Problem. It is a user-friendly graphical interface for package 'ChannelAttribution'. 
 }
 
 \details{
 \tabular{ll}{
 Package: \tab ChannelAttributionApp\cr
 Type: \tab Package\cr
-Version: \tab 1.1\cr
-Date: \tab 2016-02-20\cr
+Version: \tab 1.2\cr
+Date: \tab 2020-05-13\cr
 License: \tab GPL (>= 2)\cr
 }
  Package contains function CAapp which launches a Shiny Web Application. 
