@@ -1,3 +1,18 @@
+# ChannelAttribution: Markov model for online multi-channel attribution
+# Copyright (C) 2015 - 2020  Davide Altomare and David Loris <http://www.channelattribution.net>
+
+# ChannelAttribution is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# ChannelAttribution is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with ChannelAttribution.  If not, see <http://www.gnu.org/licenses/>.
 
 require(ChannelAttribution)
 require(shiny)
@@ -214,7 +229,7 @@ CAapp=function(){
         setDT(H)
         
         #MARKOV MODEL
-        M=markov_model_mp(env0$Data,input$var_path,input$var_conv,var_value=var_value,var_null=var_null,order=as.numeric(input$order))
+        M=markov_model(env0$Data,input$var_path,input$var_conv,var_value=var_value,var_null=var_null,order=as.numeric(input$order))
         setDT(M)
  	     
         setkeyv(H,"channel_name")

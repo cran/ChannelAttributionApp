@@ -15,9 +15,9 @@ Shiny Web Application for the Multichannel Attribution Problem. It is a user-fri
 \tabular{ll}{
 Package: \tab ChannelAttributionApp\cr
 Type: \tab Package\cr
-Version: \tab 1.2\cr
-Date: \tab 2020-05-13\cr
-License: \tab GPL (>= 2)\cr
+Version: \tab 1.3\cr
+Date: \tab 2020-07-14\cr
+License: \tab GPL-3\cr
 }
  Package contains function CAapp which launches a Shiny Web Application. 
 }

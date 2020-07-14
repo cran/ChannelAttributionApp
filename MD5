@@ -1,6 +1,7 @@
-977eb12743489c170bed124f943003c3 *DESCRIPTION
+068292028fcdc588796d415dfd43e521 *DESCRIPTION
+5c220a30d69c2870d5cb69c0c8bb4298 *LICENSE
 85de2450c8c3717fb32593455e4f6f6c *NAMESPACE
-f958c38cfd8bec2035e5804c17f4dd7c *R/ChannelAttributionApp.R
+22f8150cea6a7a9ada8fd93f7654a09b *R/ChannelAttributionApp.R
 5748e1eb6524e2e2698e3f8177e91c2c *man/CAapp.Rd
-bfc096bfa879bea0e4b6680a5b329edb *man/ChannelAttributionApp-package.Rd
+18c6ae84eb4dae66525cc24ec5e6ae79 *man/ChannelAttributionApp-package.Rd
 ad9df7c0a015b3ee785a41d1d3bb64ab *man/env0.Rd
